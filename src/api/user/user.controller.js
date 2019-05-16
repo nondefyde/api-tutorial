@@ -3,71 +3,63 @@ import { ApiResponse } from '../../utils/helpers';
 
 
 export default class UserController {
-  static id(req, res, next, id) {
+  static async id(req, res, next, id) {
     const user = UserStore.findByID(id);
     if (user) {
       req.user = user;
       return next();
     }
-    return next({
-      code: 404,
-    });
+    return res.status(404).json(ApiResponse({ code: 404, error: 'user not found' }));
   }
 
-  static find(req, res) {
+  static async find(req, res) {
     return res.status(200).json(ApiResponse({
       code: 200,
       data: UserStore.find(),
     }));
   }
 
-  static update(req, res, next) {
+  static update(req, res) {
     const payload = req.body;
     // Todo Validate if update should happen
     const user = Object.assign({}, req.user, payload);
     UserStore.update(user, 'id');
-    res.status(201).json(ApiResponse({
+    return res.status(201).json(ApiResponse({
       code: 200,
       data: user,
     }));
-    return next();
   }
 
-  static findOne(req, res, next) {
-    res.status(200).json(ApiResponse({
+  static findOne(req, res) {
+    return res.status(200).json(ApiResponse({
       code: 200,
       data: req.user,
     }));
-    return next();
   }
 
-  static delete(req, res, next) {
+  static delete(req, res) {
     const { user } = req;
     UserStore.deleteByID(user);
-    res.status(200).json(ApiResponse({
+    return res.status(200).json(ApiResponse({
       code: 200,
       data: {
         id: user.id,
       },
     }));
-    return next();
   }
 
-  static async verify(req, res, next) {
+  static async verify(req, res) {
     const { email } = req.params;
     // Todo validate user payload
     const user = UserStore.findByEmail(email);
     if (user) {
       user.status = true;
       UserStore.update(user, 'id');
-      res.status(201).json(ApiResponse({
+      return res.status(201).json(ApiResponse({
         code: 200,
         data: user,
       }));
-      return next();
     }
-    return next({
-      code: 409,
-    });
+    return res.status(404).json(ApiResponse({ code: 404, error: 'user not found' }));
   }
 }

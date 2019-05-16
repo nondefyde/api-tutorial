@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from 'config';
 
 export const ApiResponse = ({ code, error, data }) => {
+  console.log('error >>> : ', error);
   const response = {};
   if (error) {
     response.error = error;

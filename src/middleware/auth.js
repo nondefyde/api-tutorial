@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import config from 'config'; // used to create, sign, and verify tokens
+import config from 'config';
+import { ApiResponse } from '../utils/helpers'; // used to create, sign, and verify tokens
 
 export const excluded = [
   { route: 'auth/signin', method: 'POST' },
@@ -31,17 +32,12 @@ export default (req, res, next) => {
               break;
           }
         }
-        return next({
-          message,
-          code: 401,
-        });
+        return res.status(401).json(ApiResponse({ code: 401, error: message }));
       }
       req.userId = decoded.userId;
       return next();
     });
+  } else {
+    return res.status(401).json(ApiResponse({ code: 401, error: 'No authorization token provided' }));
   }
-  return next({
-    message: 'No authorization token provided',
-    code: 401,
-  });
 };

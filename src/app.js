@@ -5,9 +5,8 @@ import http from 'http';
 import config from 'config';
 import cookieParser from 'cookie-parser';
 
-import todo from './api/user/user.route';
+import user from './api/user/user.route';
 import auth from './api/auth/auth.route';
-import errorHandler from './middleware/errors';
 
 const app = express();
 
@@ -22,10 +21,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.set('port', port);
 
 app.use(prefix, auth);
-app.use(prefix, todo);
-app.use(errorHandler);
+app.use(prefix, user);
 
 const server = http.createServer(app);
 server.listen(port, () => {
-	console.log(`Application listening on localhost:${port}`);
+  console.log(`Application listening on localhost:${port}`);
 });
